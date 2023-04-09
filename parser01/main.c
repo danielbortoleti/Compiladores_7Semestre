@@ -6,13 +6,9 @@
 
 typedef enum Token
 {
-    Mais,
-    Menos,
-    Multiplicacao,
-    Divisao,
-    Potenciacao,
-    Numero,
-    Real,
+    NumeroInteiro,
+    NumeroReal,
+    Soma,
     Indeterminado,
 } Token;
 
@@ -35,35 +31,8 @@ void tokenizar(char *caracteres, int length, struct Tokens *vetorTokens, int *nu
         switch (caracteres[i])
         {
         case '+':
-            vetorTokens[j].token = Mais;
+            vetorTokens[j].token = Soma;
             vetorTokens[j].value.op = '+';
-            i++;
-            j++;
-            break;
-        case '-':
-            vetorTokens[j].token = Menos;
-            vetorTokens[j].value.op = '-';
-            i++;
-            j++;
-            break;
-        case '*':
-            if (caracteres[i + 1] == '*')
-            {
-                vetorTokens[j].token = Potenciacao;
-                vetorTokens[j].value.op = '*';
-                i += 2;
-            }
-            else
-            {
-                vetorTokens[j].token = Multiplicacao;
-                vetorTokens[j].value.op = '*';
-                i++;
-            }
-            j++;
-            break;
-        case '/':
-            vetorTokens[j].token = Divisao;
-            vetorTokens[j].value.op = '/';
             i++;
             j++;
             break;
@@ -80,7 +49,7 @@ void tokenizar(char *caracteres, int length, struct Tokens *vetorTokens, int *nu
                 divisor *= 10.0;
                 i++;
             }
-            vetorTokens[j].token = Real;
+            vetorTokens[j].token = NumeroReal;
             vetorTokens[j].value.num += decimal;
             j++;
             break;
@@ -105,12 +74,12 @@ void tokenizar(char *caracteres, int length, struct Tokens *vetorTokens, int *nu
                         divisor *= 10.0;
                         i++;
                     }
-                    vetorTokens[j].token = Real;
+                    vetorTokens[j].token = NumeroReal;
                     vetorTokens[j].value.num = num + decimal;
                 }
                 else
                 {
-                    vetorTokens[j].token = Numero;
+                    vetorTokens[j].token = NumeroInteiro;
                     vetorTokens[j].value.num = num;
                 }
             }
@@ -151,29 +120,17 @@ int main(int argc, char **argv)
     int numTokens;
     tokenizar(content, i, vetorTokens, &numTokens);
 
+    double resultado = 0.0;
+    int sinal = 1;
     for (int k = 0; k < numTokens; k++)
     {
-        if (vetorTokens[k].token == Mais)
-            printf("Mais: +\n");
-        else if (vetorTokens[k].token == Menos)
-            printf("Menos: -\n");
-        else if (vetorTokens[k].token == Multiplicacao)
-            printf("Multiplicação: *\n");
-        else if (vetorTokens[k].token == Divisao)
-            printf("Divisão: /\n");
-        else if (vetorTokens[k].token == Potenciacao)
-            printf("Potenciação: **\n");
-        else if (vetorTokens[k].token == Numero)
-            printf("Número: %f
-            \n", vetorTokens[k].value.num);
-        else if (vetorTokens[k].token == Real)
-            printf("Número real: %f\n", vetorTokens[k].value.num);
-        else if (vetorTokens[k].token == Indeterminado)
-        {
-                printf("Indeterminado: ");
-                printf("%c\n", vetorTokens[k].value.op);
-        }
+        if (vetorTokens[k].token == Soma)
+            sinal = 1;
+        else if (vetorTokens[k].token == NumeroInteiro || vetorTokens[k].token == NumeroReal)
+            resultado += sinal * vetorTokens[k].value.num;
     }
+
+    printf("O resultado é: %f\n", resultado);
 
     return 0;
 }
